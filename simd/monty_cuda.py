@@ -45,7 +45,6 @@
 karatsuba=False # default setting
 decoration=False # decorate function names to avoid name clashes
 formatted=True # pretty up the final output
-fully_propagate=False # recommended set to True for Production code
 PSCR=True # Power Side Channel Resistant conditional moves and swaps
 
 import sys
@@ -461,7 +460,7 @@ def modsubf(n) :
         str+="static "
     str+="void modsubf{}(const spint *a,const spint *b,spint *n) {{\n".format(DECOR)
 
-    if E: 
+    if E : 
         str+="\tspint q=((spint)1<<{}u);\n".format(base)
 
     for i in range(0,N) :
@@ -933,14 +932,6 @@ def modmli(n) :
         str+="\th = (spint)(t>>{}u);\n".format((n-WL)%base)
         str+="\tq=(spint)(((dpint)h*(dpint)r)>>{}u);\n".format(WL)  
 
-# required to propagate carries?
-        propc=False
-        for i in range(1,N-1) :
-            if ppw[i]!=0 :
-                propc=True
-        if ppw[0]>0 :
-            propc=True
-
         for i in range(0,N) :
             d=ppw[i]
             if d==0 :
@@ -968,15 +959,7 @@ def modmli(n) :
                         #str+="\tc[{}]=(c[{}]-(q*p{}))&mask;\n".format(i,i,i)
         if E:
             str+="\tc[{}]-=(q<<{}u);\n".format(N-1,base)
-        if propc :
-            str+="\t(void)prop(c);\n"
-        else :
-            if fully_propagate :
-                str+="\t(void)prop(c);\n"
-#        str+="*/\n"
-#        str+="\tspint w[{}];\n".format(N)
-#        str+="\tmodint{}(b,w);\n".format(DECOR)
-#        str+="\tmodmul{}(a,w,c);\n".format(DECOR)
+        str+="\t(void)prop(c);\n"
     str+="}\n"
     return str
 

@@ -43,7 +43,6 @@ formatted=True # pretty up the final output
 inline=True # consider encouraging inlining
 scale=1 # set to 10 or 100 for faster timing loops. Default to 1
 makepublic=False # Make functions public
-fully_propagate=False # recommended set to True for Production code
 PSCR=True # Power Side Channel Resistant conditional moves and swaps
 
 import sys
@@ -725,14 +724,6 @@ def modmli(n,base) :
         str+="\tlet h = (t>>{}) as SPINT;\n".format((n-WL)%base)
         str+="\tlet q=(((h as DPINT)*(r as DPINT))>>{}) as SPINT;\n".format(WL)  
 
-# required to propagate carries?
-        propc=False
-        for i in range(1,N-1) :
-            if ppw[i]!=0 :
-                propc=True
-        if ppw[0]>0 :
-            propc=True
-
         for i in range(0,N) :
             d=ppw[i]
             if d==0 :
@@ -760,16 +751,7 @@ def modmli(n,base) :
                         #str+="\tc[{}]=(c[{}]-(q*p{}))&mask;\n".format(i,i,i)
         if E:
             str+="\tc[{}]-=q<<{};\n".format(N-1,base)
-        if propc :
-            str+="\tprop(c);\n"
-        else :
-            if fully_propagate :
-                str+="\tprop(c);\n"
-#        str+="*/\n"
-#        str+="\tlet mut t: [SPINT; {}] = [0; {}];\n".format(N,N)
-#        str+="\tmodint(b,&mut t);\n"
-#        str+="\tmodmul(&t,c);\n"
-
+        str+="\tprop(c);\n"
     str+="\treturn;\n}\n"
     return str
 

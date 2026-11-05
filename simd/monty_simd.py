@@ -65,7 +65,6 @@ decoration=False # decorate function names to avoid name clashes
 formatted=True # pretty up the final output
 inline=True # consider encouraging inlining
 scale=1 # set to 10 or 100 for faster timing loops. Default to 1
-fully_propagate=False # recommended set to True for Production code
 PSCR=False # Power Side Channel Resistant conditional moves and swaps
 
 import sys
@@ -1122,14 +1121,6 @@ def modmli(n) :
         str+="\tq=MR_CAST6432(MR_SHR64U(MR_MUL32U(h,r),{}u));\n".format(WL)
         #str+="\tq=(spint)(((dpint)h*(dpint)r)>>{}u);\n".format(WL)  
 
-# required to propagate carries?
-        propc=False
-        for i in range(1,N-1) :
-            if ppw[i]!=0 :
-                propc=True
-        if ppw[0]>0 :
-            propc=True
-
         for i in range(0,N) :
             d=ppw[i]
             if d==0 :
@@ -1164,15 +1155,7 @@ def modmli(n) :
         if E:
             str+="\tc[{}]=MR_SUB32U(c[{}],MR_SHL32U(q,{}u));\n".format(N-1,N-1,base)
             #str+="\tc[{}]-=(q<<{}u);\n".format(N-1,base)                        
-        if propc :
-            str+="\t(void)prop(c);\n"
-        else :
-            if fully_propagate :
-                str+="\t(void)prop(c);\n"
-#        str+="*/\n"
-#        str+="\tspint w[{}];\n".format(N)
-#        str+="\tmodint{}(b,w);\n".format(DECOR)
-#        str+="\tmodmul{}(a,w,c);\n".format(DECOR)
+        str+="\t(void)prop(c);\n"
     str+="}\n"
     return str
 
