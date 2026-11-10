@@ -151,6 +151,15 @@ Note that this intermediate API only provides the elliptic curve functionality. 
 	gcc -O2 nist256.c weierstrass.c hash.c -o nist256
 	./nist256
 
+# Java version
+
+*pseudo_java.py* and *monty_java.py* are Java backends of *pseudo_rust.py* and *monty_rust.py*: same algorithms and radix choice, only the emitted syntax differs. They support the 32-bit word mode (limbs are Java `int`, double-width products `long`, unsigned semantics via `>>>` and explicit zero-extension).
+
+	python3 pseudo_java.py 32 X25519
+	python3 monty_java.py 32 NIST256
+
+The output is a class *Field&lt;NAME&gt;.java* (package `de.rub.nds.protocol.crypto.ec.modarith`) with the modarith API as static methods (Rust argument order) and an alias-safe `ModArithField` instance API, as used by Protocol-Attacker (https://github.com/tls-attacker/Protocol-Attacker). *pseudo_java.py* also writes a JUnit test class. If *addchain* is not in the path, a built-in sliding-window addition chain is used instead; every chain is checked against the exponent before code is emitted.
+
 # Rust version
 
 Copy all code from this directory to a working directory, and move to that directory. Create a standard rust project, named "ecc".
